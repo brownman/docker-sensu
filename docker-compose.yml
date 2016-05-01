@@ -1,34 +1,29 @@
 rabbitmq:
   image: rabbitmq
-  name: rabbitmq
-    
+
 redis:
   image: redis
-  name: redis
-    
+
 sensu-api:
   image: sensu
-  name: sensu-api
   links:
-    - "redis:redis"
-    - "rabbitmq:rabbitmq"
+    - redis
+    - rabbitmq
   command: "/opt/sensu/bin/sensu-api -c /etc/sensu/config.json -v"
 
 sensu-server:
   image: sensu
-  name: sensu-server
   links:
-    - "sensu-api:sensu-api"
-    - "redis:redis"
-    - "rabbitmq:rabbitmq"
+    - sensu-api
+    - redis
+    - rabbitmq
   command: "/opt/sensu/bin/sensu-server -c /etc/sensu/config.json -v"
 
 uchiwa:
   image: sensu
-  name: uchiwa
   links:
-    - "sensu-api:sensu-api"
-    - "sensu-server:sensu-server"
+    - sensu-api
+    - sensu-server
   ports:
     - "3001:3000"
   command: "/opt/uchiwa/bin/uchiwa -c /etc/sensu/uchiwa.json -p /opt/uchiwa/src/public"
